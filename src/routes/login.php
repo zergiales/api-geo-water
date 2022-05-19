@@ -21,7 +21,7 @@ $app->post('/login', function (Request $request, Response $response, array $args
     
     $user = $request->getParam('email');
     $pw= $request->getParam('contraseña'); 
-    $sql= "SELECT * FROM `usuarios` WHERE email = 'aAAABBBB@a.es'"; 
+    $sql= "SELECT * FROM `usuarios` WHERE email ='{$request->getParam("email")}' and contraseña='{$request->getParam("contraseña")}'"; 
     $stmt = $cnn->query($sql);
     $cnn-> close();
     
@@ -32,8 +32,8 @@ $app->post('/login', function (Request $request, Response $response, array $args
         $ret[]= $row;
 
       $payload = [
-        "id_user" => $ret[0]["id_user"],
-        "rol" =>  $ret[0]["rol"]
+        "id" => $ret[0]["id"],
+        "tipo" =>  $ret[0]["tipo"]
       ];
       
       $token = JWT::createToken($payload, TOKEN_KEY);
@@ -73,8 +73,8 @@ $app->post('/register', function (Request $request, Response $response, array $a
     $ret = null;
     $resp = '';
     $err = [];
-    $regexName = "/(^[a-záéíóúñ]+)([a-z áéíóúñ]+)?$/i";
-    $regexLastNames = "/(^[a-záéíóúñ]+)$/i";
+    $regexnombre = "/(^[a-záéíóúñ]+)([a-z áéíóúñ]+)?$/i";
+    $regexLastnombres = "/(^[a-záéíóúñ]+)$/i";
     
 
     if (!filter_var($request->getParam('email'), FILTER_VALIDATE_EMAIL)){
@@ -85,22 +85,22 @@ $app->post('/register', function (Request $request, Response $response, array $a
       $err['contraseña'] = "Las contraseñas no coinciden";
     }
     
-    if (preg_match($regexName, $request->getParam('nombre'))!== 1) {
+    if (preg_match($regexnombre, $request->getParam('nombre'))!== 1) {
       $err['nombre'] = "Nombre en formato inválido.";
     }
     
-    if (preg_match($regexLastNames, $request->getParam('apellido1')) !== 1){
+    if (preg_match($regexLastnombres, $request->getParam('apellido1')) !== 1){
       $err['apellido1'] = "Primer apellido inválido.";
     }
     
-    if (preg_match($regexLastNames, $request->getParam('apellido2')) !== 1){
+    if (preg_match($regexLastnombres, $request->getParam('apellido2')) !== 1){
       $err['apellido2'] = "Segundo apellido inválido.";
     }
 
     if (count($err) === 0) {
 
-      if (isset($_FILES['image']['name'])) {
-        $path = $_FILES['image']['name'];
+      if (isset($_FILES['image']['nombre'])) {
+        $path = $_FILES['image']['nombre'];
         $ext = pathinfo($path, PATHINFO_EXTENSION);
         $restado='';
           try {
@@ -113,18 +113,18 @@ $app->post('/register', function (Request $request, Response $response, array $a
             $now = new DateTime();
             $now = $now->getTimeStamp();
         
-            $filename = $now . $path;
-            $totalPath = $location.$filename;
+            $filenombre = $now . $path;
+            $totalPath = $location.$filenombre;
 
-            move_uploaded_file($_FILES['image']['tmp_name'],$totalPath);
+            move_uploaded_file($_FILES['image']['tmp_nombre'],$totalPath);
 
         
-            $arr = array("imagen"=>$filename);
+            $arr = array("imagen"=>$filenombre);
             $restado = json_encode($arr);
 
-            $sql = "INSERT INTO `users` (`name`, `last_name_1`, `last_name_2`, `email`, `password`, `rol`, `route_image`) 
-              VALUES ('{$request->getParam("name")}', '{$request->getParam("last_name_1")}', '{$request->getParam("last_name_2")}', 
-              '{$request->getParam("email")}', '{$request->getParam("password1")}', 'wisher', '{$totalPath}')";
+            $sql = "INSERT INTO `usuarios` (`nombre`, `apellido1`, `apellido2`, `email`, `contraseña`, `img`, `tipo`) 
+              VALUES ('{$request->getParam("nombre")}', '{$request->getParam("apellido1")}', '{$request->getParam("apellido2")}', 
+              '{$request->getParam("email")}', '{$request->getParam("contraseña")}', 'wisher', '{$totalPath}')";
 
             $stmt = $cnn->query($sql);
             $cnn-> close();
@@ -142,15 +142,15 @@ $app->post('/register', function (Request $request, Response $response, array $a
 
 
       } else {
-        $sql = "INSERT INTO `usuarios` (`nombre`, `apellido1`, `apellido2`, `email`, `contraseña`, `img`, `tipo` ) 
+        $sql = "INSERT INTO `usuarios` (`nombre`, `apellido1`, `apellido2`, `email`, `contraseña`, `img`, `tipo`, `activo` ) 
         VALUES ('{$request->getParam("nombre")}', '{$request->getParam("apellido1")}', '{$request->getParam("apellido2")}', 
-        '{$request->getParam("email")}', '{$request->getParam("contraseña")}', 'public/upload/user_anon.png', 0)";
+        '{$request->getParam("email")}', '{$request->getParam("contraseña")}', 'public/upload/user_anon.png', 0,0)";
 
         $stmt = $cnn->query($sql);
         $cnn-> close();
   
         if(!$stmt){
-          throw new Exception("Ha habiwdo un error, intentelo más tarde.", 5);
+          throw new Exception("Ha habido un error, intentelo más tarde.", 5);
         } else{
           $json = '{"text": "Usuario registrado correctamente."}';
         }
@@ -196,7 +196,7 @@ $app->get('/renewcredentials', function (Request $request, Response $response) {
       throw new Exception("Error al conectar con la base de datos.", 1);
     }
 
-    $sql= "SELECT email, name, last_name_1, last_name_2, rol, route_image, id_user FROM users WHERE id_user = '{$data->id_user}'"; 
+    $sql= "SELECT email, nombre, apellido1, apellido2, tipo, img, id FROM users WHERE id = '{$data->id}'"; 
     $stmt = $cnn->query($sql);
     $cnn-> close();
 
@@ -205,12 +205,12 @@ $app->get('/renewcredentials', function (Request $request, Response $response) {
 
     $arr = array(
       "email" => $ret[0]["email"],
-      "name" => $ret[0]["name"],
-      "last_name_1" => $ret[0]["last_name_1"],
-      "last_name_2" => $ret[0]["last_name_2"],
-      "rol" => $ret[0]["rol"],
-      "route_image" => $ret[0]["route_image"],
-      "id_user" => $ret[0]["id_user"]
+      "nombre" => $ret[0]["nombre"],
+      "apellido1" => $ret[0]["apellido1"],
+      "apellido2" => $ret[0]["apellido2"],
+      "tipo" => $ret[0]["tipo"],
+      "img" => $ret[0]["img"],
+      "id" => $ret[0]["id"]
     );
     $resp = json_encode($arr);
 
@@ -223,10 +223,10 @@ $app->get('/renewcredentials', function (Request $request, Response $response) {
   return $response;  
 });
 
-$app->post('/changePassword', function (Request $request, Response $response, array $args) {
+$app->post('/changecontraseña', function (Request $request, Response $response, array $args) {
   $cnn = new DB();
   
-  $password = $request->getParam("password");
+  $contraseña = $request->getParam("contraseña");
 
   $auth = apache_request_headers();
     $token = $auth['Authorization'];
@@ -242,13 +242,13 @@ $app->post('/changePassword', function (Request $request, Response $response, ar
     }
 
     $sql = "UPDATE users
-      SET password = '{$password}' WHERE id_user = '{$data->id_user}'";
+      SET contraseña = '{$contraseña}' WHERE id = '{$data->id}'";
 
     $stmt = $cnn->query($sql);
     $cnn-> close();
 
     if(!$stmt){
-      throw new Exception("Ha habiwdo un error, intentelo más tarde.", 5);
+      throw new Exception("Ha habido un error, intentelo más tarde.", 5);
     } else{
       $json = '{"text": "Contraseña cambiada correctamente"}';
     }
@@ -280,8 +280,8 @@ $app->post('/changeAvatar', function (Request $request, Response $response, arra
     $ret = null;
     $resp = '';    
 
-      if (isset($_FILES['image']['name'])) {
-        $path = $_FILES['image']['name'];
+      if (isset($_FILES['image']['nombre'])) {
+        $path = $_FILES['image']['nombre'];
         $ext = pathinfo($path, PATHINFO_EXTENSION);
         $restado='';
           try {
@@ -294,16 +294,16 @@ $app->post('/changeAvatar', function (Request $request, Response $response, arra
             $now = new DateTime();
             $now = $now->getTimeStamp();
         
-            $filename = $now . $path;
-            $totalPath = $location.$filename;
+            $filenombre = $now . $path;
+            $totalPath = $location.$filenombre;
 
-            move_uploaded_file($_FILES['image']['tmp_name'],$totalPath);
+            move_uploaded_file($_FILES['image']['tmp_nombre'],$totalPath);
 
         
-            $arr = array("imagen"=>$filename);
+            $arr = array("imagen"=>$filenombre);
             $restado = json_encode($arr);
 
-            $sql= "UPDATE `users` SET `route_image` = '{$totalPath}' WHERE `users`.`id_user` = '{$data->id_user}';";
+            $sql= "UPDATE `users` SET `img` = '{$totalPath}' WHERE `users`.`id` = '{$data->id}';";
           
 
             $stmt = $cnn->query($sql);
