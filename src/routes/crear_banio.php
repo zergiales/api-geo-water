@@ -79,7 +79,7 @@ $app->get('/loadUserWishes', function (Request $request, Response $response, arr
     return $response;
 });
 
-$app->post('/createWish', function (Request $request, Response $response, array $args) {
+$app->post('/banios', function (Request $request, Response $response, array $args) {
     $cnn = new DB();
   try{
     $cnn = $cnn->connect();
@@ -100,8 +100,8 @@ $app->post('/createWish', function (Request $request, Response $response, array 
     $link =  $request->getParam("wish_link");
 
     //guardar el item nuevo en la base de datos
-    $sqlSaveItem = "INSERT INTO `items` (`name`, `description`, `link`, `available`) 
-        VALUES ('{$request->getParam("wish_name")}', '{$request->getParam("wish_description")}', '{$request->getParam("wish_link")}', 
+    $sqlSaveItem = "INSERT INTO `baños` (`nombre`, `pais`, `provincia`, `cp`, `ciudad`, `calle`) 
+        VALUES ('{$request->getParam("nombre")}', '{$request->getParam("id_ubicacion")}', '{$request->getParam("wish_link")}', 
         'yes')";
 
     $stmt = $cnn->query($sqlSaveItem);
