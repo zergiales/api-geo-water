@@ -170,8 +170,8 @@ $app->post('/register', function (Request $request, Response $response, array $a
   return $response;  
 });
 
-
-$app->get('/signoff', function (Request $request, Response $response) {
+//para cerrar sesion
+$app->get('/cerrarSesion', function (Request $request, Response $response) {
   $path = $request->getUri()->getPath();
   $response->withStatus(200);
   $response->getBody()->write($path);

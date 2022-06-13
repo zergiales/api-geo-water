@@ -57,6 +57,8 @@ require "../src/routes/contacts.php";
 //cargar las notificaciones de amistad
 //cargar las notificaciones de grupo
 require "../src/routes/notif.php";
+//cargar el nombre del usuario
+require"../src/routes/userName.php";
 
 require "../src/routes/admision.php";
 
