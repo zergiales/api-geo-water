@@ -27,10 +27,6 @@ $app->get('/hey/{nombre}/{apellido}' , function (Request $request , Response $re
 //login, registro, cerrar sesión, renovar datos, cambiar contraseña, cambiar avatar
 require "../src/routes/login.php";
 
-//crear baño, cargar todos los baños, borrar baños, mostrar los baños de tu alrededor
-//cargar los baños de un usuario
-require "../src/routes/banios.php";
-
 //crear grupo, borrar grupo, cargar la info de un grupo,
 //cargar todos los grupos de un usuario, cargar la info de un grupo del que eres propietario
 //cargar todos tus grupos
