@@ -27,35 +27,13 @@ $app->get('/hey/{nombre}/{apellido}' , function (Request $request , Response $re
 //login, registro, cerrar sesión, renovar datos, cambiar contraseña, cambiar la imagen
 require "../src/routes/login.php";
 
-//crear grupo, borrar grupo, cargar la info de un grupo,
-//cargar todos los grupos de un usuario, cargar la info de un grupo del que eres propietario
-//cargar todos tus grupos
-require "../src/routes/groups.php";
+//para mostrar informacion del usuario en home
+require "../src/routes/home.php";
 
-//cargar deseos de un grupo concreto, cargar miembros de un grupo concreto
-//crear la vinculacion entre un grupo y un deseo
-require "../src/routes/wish_groups.php";
+// insertar baños, cambiar baños y eliminar baños
+require "../src/routes/banios.php";
 
-//cargar los contactos de un usuario concreto
-require "../src/routes/users_actions.php";
-
-//eliminar contacto, ver detalles de un contacto
-//cargar los deseos de un contacto en concreto
-//cargar todos los contactos
-//cargar los contactos q no pertenecen a un grupo
-//cargar los contactos que pertenecen a un grupo
-//añadir un usuario a un grupo
-//borrar a un usuario de un grupo
-require "../src/routes/contacts.php";
-
-//mandar notificacion de amistad, aceptar amigo, leer notificacion
-//mandar notificacion de que te han añadido a un grupo
-//cargar las notificaciones de amistad
-//cargar las notificaciones de grupo
-require "../src/routes/notif.php";
-//cargar el nombre del usuario
-require"../src/routes/userName.php";
-
-require "../src/routes/admision.php";
+//insertar reseñas, cambiar reseñas y eliminar reseñas
+require "../src/routes/resenias.php";
 
 $app->run();
