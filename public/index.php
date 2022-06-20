@@ -16,12 +16,12 @@ $app = new \Slim\App($config);
 /**
  * New routes
  */
-$app->get('/hey/{nombre}/{apellido}' , function (Request $request , Response $response, array $args) {
-  $name=$args['nombre'];
-  $surname=$args['apellido'];
-  $response->getBody()->write("hello, $name $surname");
-  return $response;
-});
+// $app->get('/hey/{nombre}/{apellido}' , function (Request $request , Response $response, array $args) {
+//   $name=$args['nombre'];
+//   $surname=$args['apellido'];
+//   $response->getBody()->write("hello, $name $surname");
+//   return $response;
+// });
 
 
 //login, registro, cerrar sesión, renovar datos, cambiar contraseña, cambiar la imagen

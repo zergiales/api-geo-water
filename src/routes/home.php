@@ -8,10 +8,12 @@ require_once '../src/config/db.php';
 require_once '../src/config/tokenGenerator.php';
 
 //ver el nombre de usuario y los datos de los baños
-$app->get('/home', function (Request $request, Response $response, array $args) {
+$app->get('/home/{nombre}', function (Request $request, Response $response, array $args) {
     $ret = null;
     $cnn = new DB();
-    $resp = 'funcicona';
+    $name = $args['nombre'];
+    $response->getBody()->write("$name");
+    return $response;
 
     try {
         $cnn = $cnn->connect();
@@ -52,8 +54,6 @@ $app->get('/home', function (Request $request, Response $response, array $args) 
     } catch (Exception $e) {
         $resp = '{"error":{"text":"' . $e->getMessage() . '"}}';
     }
-    
-    $response->getBody()->write($resp);
     $response->withHeader('Content-Type', 'application/json');
     return $response;
 });

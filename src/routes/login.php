@@ -20,8 +20,11 @@ $app->post('/login', function (Request $request, Response $response, array $args
     }
     
     $user = $request->getParam('email');
-    $pw= $request->getParam('contraseña'); 
-    $sql= "SELECT * FROM `usuarios` WHERE email ='{$request->getParam("email")}' and contraseña='{$request->getParam("contraseña")}'"; 
+    $contraseña = $request->getParam('contraseña');
+    /*hasheamos la contraseña */
+    $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
+    $sql= "SELECT * FROM `usuarios` WHERE email ='{$user}'"; 
+    
     $stmt = $cnn->query($sql);
     $cnn-> close();
     
@@ -96,6 +99,14 @@ $app->post('/register', function (Request $request, Response $response, array $a
     if (preg_match($regexLastnombres, $request->getParam('apellido2')) !== 1){
       $err['apellido2'] = "Segundo apellido inválido.";
     }
+    /*metemos los parametros una vez pasados los filtros en variables */
+    $nombre = $request->getParam('nombre');
+    $apellido1 = $request->getParam('apellido1');
+    $apellido2 = $request->getParam('apellido2');
+    $email = $request->getParam('email');
+    $contraseña = $request->getParam('contraseña');
+    /*hasheamos la contraseña */
+    $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
 
     if (count($err) === 0) {
 
@@ -123,8 +134,8 @@ $app->post('/register', function (Request $request, Response $response, array $a
             $restado = json_encode($arr);
 
             $sql = "INSERT INTO `usuarios` (`nombre`, `apellido1`, `apellido2`, `email`, `contraseña`, `img`, `tipo`) 
-              VALUES ('{$request->getParam("nombre")}', '{$request->getParam("apellido1")}', '{$request->getParam("apellido2")}', 
-              '{$request->getParam("email")}', '{$request->getParam("contraseña")}', 'wisher', '{$totalPath}')";
+              VALUES ('{$nombre}', '{$apellido1}', '{$apellido2}', 
+              '{$email}', '{$contraseña_cifrada}', '{$totalPath}',0,0)";
 
             $stmt = $cnn->query($sql);
             $cnn-> close();
@@ -143,8 +154,8 @@ $app->post('/register', function (Request $request, Response $response, array $a
 
       } else {
         $sql = "INSERT INTO `usuarios` (`nombre`, `apellido1`, `apellido2`, `email`, `contraseña`, `img`, `tipo`, `activo` ) 
-        VALUES ('{$request->getParam("nombre")}', '{$request->getParam("apellido1")}', '{$request->getParam("apellido2")}', 
-        '{$request->getParam("email")}', '{$request->getParam("contraseña")}', 'public/upload/user_anon.png', 0,0)";
+        VALUES ('{$nombre}', '{$apellido1}', '{$apellido2}', 
+        '{$email}', '{$contraseña}', 'public/upload/user_anon.png', 0,0)";
 
         $stmt = $cnn->query($sql);
         $cnn-> close();
@@ -162,164 +173,6 @@ $app->post('/register', function (Request $request, Response $response, array $a
     $resp = $json;
 
  
-  } catch (Exception $e){             
-    $resp = '{"error":{"text":"'.$e->getMessage().'"}}';
-  }
-  $response->getBody()->write($resp);
-  $response->withHeader('Content-Type', 'application/json');
-  return $response;  
-});
-
-//para cerrar sesion
-$app->get('/cerrarSesion', function (Request $request, Response $response) {
-  $path = $request->getUri()->getPath();
-  $response->withStatus(200);
-  $response->getBody()->write($path);
-  $response->withHeader('Content-Type', 'application/json');
-  return $response; 
-});
-
-$app->get('/renewcredentials', function (Request $request, Response $response) {
-  $auth = apache_request_headers();
-  $token = $auth['Authorization'];
-  $partsToken =  explode('.', $token);
-
-  $data = json_decode(base64_decode($partsToken[1], true));
-
-  $cnn = new DB();
-  $resp = '';
-  
-  try{
-    $cnn = $cnn->connect();
-    
-    if(!$cnn){
-      throw new Exception("Error al conectar con la base de datos.", 1);
-    }
-
-    $sql= "SELECT email, nombre, apellido1, apellido2, tipo, img, id FROM users WHERE id = '{$data->id}'"; 
-    $stmt = $cnn->query($sql);
-    $cnn-> close();
-
-    while ($row = $stmt->fetch_assoc())
-        $ret[]= $row;
-
-    $arr = array(
-      "email" => $ret[0]["email"],
-      "nombre" => $ret[0]["nombre"],
-      "apellido1" => $ret[0]["apellido1"],
-      "apellido2" => $ret[0]["apellido2"],
-      "tipo" => $ret[0]["tipo"],
-      "img" => $ret[0]["img"],
-      "id" => $ret[0]["id"]
-    );
-    $resp = json_encode($arr);
-
-  }catch (Exception $e){             
-    $resp = '{"error":{"text":"'.$e->getMessage().'"}}';
-  }
-
-  $response->getBody()->write($resp);
-  $response->withHeader('Content-Type', 'application/json');
-  return $response;  
-});
-
-$app->post('/changecontraseña', function (Request $request, Response $response, array $args) {
-  $cnn = new DB();
-  
-  $contraseña = $request->getParam("contraseña");
-
-  $auth = apache_request_headers();
-    $token = $auth['Authorization'];
-    $partsToken =  explode('.', $token);
-
-    $data = json_decode(base64_decode($partsToken[1], true));
-
-  try{
-    $cnn = $cnn->connect();
-    
-    if(!$cnn){
-      throw new Exception("Error al conectar con la base de datos.", 1);
-    }
-
-    $sql = "UPDATE users
-      SET contraseña = '{$contraseña}' WHERE id = '{$data->id}'";
-
-    $stmt = $cnn->query($sql);
-    $cnn-> close();
-
-    if(!$stmt){
-      throw new Exception("Ha habido un error, intentelo más tarde.", 5);
-    } else{
-      $json = '{"text": "Contraseña cambiada correctamente"}';
-    }
-
-    $resp = $json;
-
-  } catch (Exception $e){             
-    $resp = '{"error":{"text":"'.$e->getMessage().'"}}';
-  }
-  $response->getBody()->write($resp);
-  $response->withHeader('Content-Type', 'application/json');
-  return $response;  
-});
-
-$app->post('/changeAvatar', function (Request $request, Response $response, array $args) {
-  $cnn = new DB();
-  $auth = apache_request_headers();
-  $token = $auth['Authorization'];
-  $partsToken =  explode('.', $token);
-
-  $data = json_decode(base64_decode($partsToken[1], true));
-  try{
-    $cnn = $cnn->connect();
-    
-    if(!$cnn){
-      throw new Exception("Error al conectar con la base de datos.", 1);
-    }
-    
-    $ret = null;
-    $resp = '';    
-
-      if (isset($_FILES['image']['nombre'])) {
-        $path = $_FILES['image']['nombre'];
-        $ext = pathinfo($path, PATHINFO_EXTENSION);
-        $restado='';
-          try {
-        
-            if($ext != 'jpg' && $ext !='png' && $ext != 'PNG' && $ext != 'JPG'){
-              throw new Exception("Formato de imagen no válido", 1);
-            }
-            $location = 'upload/';
-        
-            $now = new DateTime();
-            $now = $now->getTimeStamp();
-        
-            $filenombre = $now . $path;
-            $totalPath = $location.$filenombre;
-
-            move_uploaded_file($_FILES['image']['tmp_nombre'],$totalPath);
-
-        
-            $arr = array("imagen"=>$filenombre);
-            $restado = json_encode($arr);
-
-            $sql= "UPDATE `users` SET `img` = '{$totalPath}' WHERE `users`.`id` = '{$data->id}';";
-          
-
-            $stmt = $cnn->query($sql);
-            $cnn-> close();
-      
-            if(!$stmt){
-              throw new Exception("Ha habido un error, intentelo más tarde.", 5);
-            } else{
-              $resp = '{"text": "Avatar cambiado correctamente."}';
-            }
-        
-          } catch (Exception $e) {
-            $response = $response->withStatus(400);
-            $resp = '{"error": "'.$e-> getMessage().'"}';
-          }
-        }
   } catch (Exception $e){             
     $resp = '{"error":{"text":"'.$e->getMessage().'"}}';
   }

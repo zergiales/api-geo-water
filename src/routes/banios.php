@@ -73,7 +73,7 @@ $app->post('/banios', function (Request $request, Response $response, array $arg
         $resp = '';
         $err = [];
         $regexnombre = "/(^[a-záéíóúñ]+)([a-z áéíóúñ]+)?$/i";
-        $regexLastnombres = "/(^[a-záéíóúñ]+)$/i";
+        $regexPais = "/(^[a-záéíóúñ]+)$/i";
 
 
         if (!filter_var($request->getParam('email'), FILTER_VALIDATE_EMAIL)) {
@@ -88,11 +88,11 @@ $app->post('/banios', function (Request $request, Response $response, array $arg
             $err['nombre'] = "Nombre en formato inválido.";
         }
 
-        if (preg_match($regexLastnombres, $request->getParam('apellido1')) !== 1) {
+        if (preg_match($regexPais, $request->getParam('apellido1')) !== 1) {
             $err['apellido1'] = "Primer apellido inválido.";
         }
 
-        if (preg_match($regexLastnombres, $request->getParam('apellido2')) !== 1) {
+        if (preg_match($regexPais, $request->getParam('apellido2')) !== 1) {
             $err['apellido2'] = "Segundo apellido inválido.";
         }
 
@@ -103,7 +103,7 @@ $app->post('/banios', function (Request $request, Response $response, array $arg
                 $ext = pathinfo($path, PATHINFO_EXTENSION);
                 $restado = '';
                 try {
-
+                    /* formatos de imagen */
                     if ($ext != 'jpg' && $ext != 'png' && $ext != 'PNG' && $ext != 'JPG') {
                         throw new Exception("Formato de imagen no válido", 1);
                     }
@@ -121,9 +121,11 @@ $app->post('/banios', function (Request $request, Response $response, array $arg
                     $arr = array("imagen" => $filenombre);
                     $restado = json_encode($arr);
 
-                    $sql = "INSERT INTO `usuarios` (`nombre`, `apellido1`, `apellido2`, `email`, `contraseña`, `img`, `tipo`) 
-              VALUES ('{$request->getParam("nombre")}', '{$request->getParam("apellido1")}', '{$request->getParam("apellido2")}', 
-              '{$request->getParam("email")}', '{$request->getParam("contraseña")}', 'wisher', '{$totalPath}')";
+                    $sql = "INSERT INTO `baños` (`id_usuario`, `nombre`, `pais`, `provincia`, `cp`, `ciudad`,
+                    `calle`, `descripcion`, `imagen`, `latitud`, `coorX`, `coorY`, coorZ) 
+                    VALUES ('{$request->getParam("id_usuario")}', '{$request->getParam("nombre")}', '{$request->getParam("pais")}', 
+                    '{$request->getParam("provincia")}', '{$request->getParam("cp")}', '{$request->getParam("ciudad")}', '{$request->getParam("calle")}',
+                    '{$latitud}', '{$coorX}', '{$coorY}', '{$coorZ}')";
 
                     $stmt = $cnn->query($sql);
                     $cnn->close();
