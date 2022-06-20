@@ -25,6 +25,7 @@ $app->post('/resenias', function (Request $request, Response $response, array $a
         $regexLastnombres = "/(^[a-záéíóúñ]+)$/i";
 
 
+        /*validacion para entrar a la pagina  */
         if (!filter_var($request->getParam('email'), FILTER_VALIDATE_EMAIL)) {
             $err['email'] = "El email no es válido.";
         }
@@ -35,14 +36,6 @@ $app->post('/resenias', function (Request $request, Response $response, array $a
 
         if (preg_match($regexnombre, $request->getParam('nombre')) !== 1) {
             $err['nombre'] = "Nombre en formato inválido.";
-        }
-
-        if (preg_match($regexLastnombres, $request->getParam('apellido1')) !== 1) {
-            $err['apellido1'] = "Primer apellido inválido.";
-        }
-
-        if (preg_match($regexLastnombres, $request->getParam('apellido2')) !== 1) {
-            $err['apellido2'] = "Segundo apellido inválido.";
         }
 
         if (count($err) === 0) {

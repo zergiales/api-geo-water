@@ -24,7 +24,7 @@ $app->get('/hey/{nombre}/{apellido}' , function (Request $request , Response $re
 });
 
 
-//login, registro, cerrar sesión, renovar datos, cambiar contraseña, cambiar avatar
+//login, registro, cerrar sesión, renovar datos, cambiar contraseña, cambiar la imagen
 require "../src/routes/login.php";
 
 //crear grupo, borrar grupo, cargar la info de un grupo,
