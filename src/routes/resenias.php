@@ -7,7 +7,7 @@ require_once '../src/config/config.php';
 require_once '../src/config/db.php';
 require_once '../src/config/tokenGenerator.php';
 
-//registrar baños
+//registrar resenias
 
 $app->post('/resenias', function (Request $request, Response $response, array $args) {
     $cnn = new DB();
@@ -70,9 +70,9 @@ $app->post('/resenias', function (Request $request, Response $response, array $a
                     $arr = array("imagen" => $filenombre);
                     $restado = json_encode($arr);
 
-                    $sql = "INSERT INTO `baños` (`nombre`, `pais`, `provincia`, `cp`, `ciudad`, `calle`, `descripcion`, `imagen`) 
-                    VALUES ('{$request->getParam("nombre")}', '{$request->getParam("apellido1")}', '{$request->getParam("apellido2")}', 
-                    '{$request->getParam("email")}', '{$request->getParam("contraseña")}', 'wisher', '{$totalPath}')";
+                    $sql = "INSERT INTO `reseñas` (`id_baño`, `id_usuario`, `titulo`, `fecha`, `descripcion`) 
+                    VALUES ('{$request->getParam("id_baño")}', '{$request->getParam("id_usuario")}', '{$request->getParam("titulo")}', 
+                    '{$request->getParam("fecha")}', '{$request->getParam("descripcion")}', 'wisher', '{$totalPath}')";
 
                     $stmt = $cnn->query($sql);
                     $cnn->close();
@@ -87,9 +87,9 @@ $app->post('/resenias', function (Request $request, Response $response, array $a
                     $resp = '{"error": "' . $e->getMessage() . '"}';
                 }
             } else {
-                $sql = "INSERT INTO `usuarios` (`nombre`, `apellido1`, `apellido2`, `email`, `contraseña`, `img`, `tipo`, `activo` ) 
-        VALUES ('{$request->getParam("nombre")}', '{$request->getParam("apellido1")}', '{$request->getParam("apellido2")}', 
-        '{$request->getParam("email")}', '{$request->getParam("contraseña")}', 'public/upload/user_anon.png', 0,0)";
+            $sql = "INSERT INTO `reseñas` (`id_baño`, `id_usuario`, `titulo`, `fecha`, `descripcion`) 
+                    VALUES ('{$request->getParam("id_baño")}', '{$request->getParam("id_usuario")}', '{$request->getParam("titulo")}', 
+                    '{$request->getParam("fecha")}', '{$request->getParam("descripcion")}', 'wisher', '{$totalPath}')";
 
                 $stmt = $cnn->query($sql);
                 $cnn->close();
