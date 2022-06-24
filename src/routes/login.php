@@ -42,6 +42,7 @@ $app->post('/login', function (Request $request, Response $response, array $args
       $token = JWT::createToken($payload, TOKEN_KEY);
     }  
     $arr = array(
+      "id" =>$ret[0]["id"],
       "email" => $ret[0]["email"],
       "nombre" => $ret[0]["nombre"],
       "apellido1" => $ret[0]["apellido1"],
@@ -100,6 +101,7 @@ $app->post('/register', function (Request $request, Response $response, array $a
       $err['apellido2'] = "Segundo apellido inválido.";
     }
     /*metemos los parametros una vez pasados los filtros en variables */
+    $id = $request->getParam('id');
     $nombre = $request->getParam('nombre');
     $apellido1 = $request->getParam('apellido1');
     $apellido2 = $request->getParam('apellido2');
@@ -107,7 +109,7 @@ $app->post('/register', function (Request $request, Response $response, array $a
     $contraseña = $request->getParam('contraseña');
     /*hasheamos la contraseña */
     $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
-
+    $contador_baños = "SELECT COUNT(*) FROM BAÑOS P1, USUARIOS P2 WHERE P1.ID_USUARIO = P2.ID AND P2.ID =$id ;";
     if (count($err) === 0) {
 
       if (isset($_FILES['image']['nombre'])) {

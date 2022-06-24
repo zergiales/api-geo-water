@@ -27,8 +27,6 @@ $app = new \Slim\App($config);
 //login, registro, cerrar sesión, renovar datos, cambiar contraseña, cambiar la imagen
 require "../src/routes/login.php";
 
-//para mostrar informacion del usuario en home
-require "../src/routes/home.php";
 
 // insertar baños, cambiar baños y eliminar baños
 require "../src/routes/banios.php";
