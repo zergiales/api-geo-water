@@ -23,8 +23,8 @@ $app->post('/login', function (Request $request, Response $response, array $args
     $contraseña = $request->getParam('contraseña');
     /*hasheamos la contraseña */
     $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
-    $sql= "SELECT * FROM `usuarios` WHERE email ='{$user}'"; 
-    
+    $sql= "SELECT * FROM `usuarios` WHERE email ='{$user}' and  contraseña ='{$contraseña_cifrada}'"; 
+    //arreglar lo de la contraseñ acifrada
     $stmt = $cnn->query($sql);
     $cnn-> close();
     
