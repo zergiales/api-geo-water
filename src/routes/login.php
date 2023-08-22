@@ -107,7 +107,7 @@ $app->post('/register', function (Request $request, Response $response, array $a
     $apellido2 = $request->getParam('apellido2');
     $email = $request->getParam('email');
     $contraseña = $request->getParam('contraseña');
-    /*hasheamos la contraseña */
+    /*hasheamos la contraseña p*/
     $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
     $contador_baños = "SELECT COUNT(*) FROM BAÑOS P1, USUARIOS P2 WHERE P1.ID_USUARIO = P2.ID AND P2.ID =$id ;";
     if (count($err) === 0) {
