@@ -22,8 +22,8 @@ $app->post('/login', function (Request $request, Response $response, array $args
     $user = $request->getParam('email');
     $contraseña = $request->getParam('contraseña');
     /*hasheamos la contraseña */
-    $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
-    $sql= "SELECT * FROM `usuarios` WHERE email ='{$user}' and  contraseña ='{$contraseña_cifrada}'"; 
+    // $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
+    $sql= "SELECT * FROM `usuarios` WHERE email ='{$user}''"; 
     //arreglar lo de la contraseñ acifrada
     $stmt = $cnn->query($sql);
     $cnn-> close();
@@ -109,7 +109,7 @@ $app->post('/register', function (Request $request, Response $response, array $a
     $contraseña = $request->getParam('contraseña');
     /*hasheamos la contraseña p*/
     $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
-    $contador_baños = "SELECT COUNT(*) FROM BAÑOS P1, USUARIOS P2 WHERE P1.ID_USUARIO = P2.ID AND P2.ID =$id ;";
+    // $contador_baños = "SELECT COUNT(*) FROM BAÑOS P1, USUARIOS P2 WHERE P1.ID_USUARIO = P2.ID AND P2.ID =$id ;";
     if (count($err) === 0) {
 
       if (isset($_FILES['image']['nombre'])) {
