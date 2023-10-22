@@ -21,10 +21,7 @@ $app->post('/login', function (Request $request, Response $response, array $args
     
     $user = $request->getParam('email');
     $contraseña = $request->getParam('contraseña');
-    /*hasheamos la contraseña */
-    // $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
-    $sql= "SELECT * FROM `usuarios` WHERE email ='{$user}''"; 
-    //arreglar lo de la contraseñ acifrada
+    $sql= "SELECT * FROM `usuarios` WHERE email = '{$user}' and password = '{$contraseña}'"; 
     $stmt = $cnn->query($sql);
     $cnn-> close();
     
@@ -182,3 +179,7 @@ $app->post('/register', function (Request $request, Response $response, array $a
   $response->withHeader('Content-Type', 'application/json');
   return $response;  
 });
+
+<script>
+  console.log($payload);
+</script>
