@@ -40,12 +40,14 @@ $app->post('/login', function (Request $request, Response $response, array $args
     }  
     $arr = array(
       "id" =>$ret[0]["id"],
-      "email" => $ret[0]["email"],
       "nombre" => $ret[0]["nombre"],
       "apellido1" => $ret[0]["apellido1"],
       "apellido2" => $ret[0]["apellido2"],
+      "email" => $ret[0]["email"],
+      "contraseña" =>$ret[0]["contraseña"],
       "img" => $ret[0]["img"],
       "tipo" => $ret[0]["tipo"],
+      "activo" => $ret[0]["activo"],
       "token" => $token
     );  
     $resp = json_encode($arr);
@@ -97,16 +99,17 @@ $app->post('/register', function (Request $request, Response $response, array $a
     if (preg_match($regexLastnombres, $request->getParam('apellido2')) !== 1){
       $err['apellido2'] = "Segundo apellido inválido.";
     }
-    /*metemos los parametros una vez pasados los filtros en variables */
-    $id = $request->getParam('id');
-    $nombre = $request->getParam('nombre');
-    $apellido1 = $request->getParam('apellido1');
-    $apellido2 = $request->getParam('apellido2');
-    $email = $request->getParam('email');
-    $contraseña = $request->getParam('contraseña');
-    /*hasheamos la contraseña p*/
-    $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
-    // $contador_baños = "SELECT COUNT(*) FROM BAÑOS P1, USUARIOS P2 WHERE P1.ID_USUARIO = P2.ID AND P2.ID =$id ;";
+    // /*metemos los parametros una vez pasados los filtros en variables */
+    // $id = $request->getParam('id');
+    // $nombre = $request->getParam('nombre');
+    // $apellido1 = $request->getParam('apellido1');
+    // $apellido2 = $request->getParam('apellido2');
+    // $email = $request->getParam('email');
+    // $contraseña = $request->getParam('contraseña');
+    // /*hasheamos la contraseña p*/
+    // $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
+    // // $contador_baños = "SELECT COUNT(*) FROM BAÑOS P1, USUARIOS P2 WHERE P1.ID_USUARIO = P2.ID AND P2.ID =$id ;";
+    
     if (count($err) === 0) {
 
       if (isset($_FILES['image']['nombre'])) {
@@ -179,7 +182,3 @@ $app->post('/register', function (Request $request, Response $response, array $a
   $response->withHeader('Content-Type', 'application/json');
   return $response;  
 });
-
-<script>
-  console.log($payload);
-</script>
