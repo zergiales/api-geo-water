@@ -39,11 +39,10 @@ $app->post('/login', function (Request $request, Response $response, array $args
       $token = JWT::createToken($payload, TOKEN_KEY);
     }  
     $arr = array(
-      "id" =>$ret[0]["id"],
       "nombre" => $ret[0]["nombre"],
       "apellido1" => $ret[0]["apellido1"],
       "apellido2" => $ret[0]["apellido2"],
-      "email" => $ret[0]["email"],
+      "email" => $ret[0]["e mail"],
       "contraseña" =>$ret[0]["contraseña"],
       "img" => $ret[0]["img"],
       "tipo" => $ret[0]["tipo"],
@@ -106,7 +105,6 @@ $app->post('/register', function (Request $request, Response $response, array $a
      $apellido2 = $request->getParam('apellido2');
      $email = $request->getParam('email');
      $contraseña = $request->getParam('contraseña');
-     /*hasheamos la contraseña p*/
      $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
      $contador_baños = "SELECT COUNT(*) FROM BAÑOS P1, USUARIOS P2 WHERE P1.ID_USUARIO = P2.ID AND P2.ID =$id ;";
     
